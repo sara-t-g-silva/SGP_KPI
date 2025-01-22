@@ -1,0 +1,105 @@
+{%  extends 'base.html' %}
+
+{% block title %}
+KPI - Rpa's
+{% endblock %}
+
+{% block content %}
+
+
+    {%  if perms.view_rpa and perms.view_rpa_log_success and perms.view_rpa_log_error%}
+        {% include 'components/_rpa_metrics.html' %}
+    {% endif %}
+
+    <!--Adiciona um espaço entre até o outro dado do html-->
+    <div class="mb-4"></div>
+
+    <div class="container mt-4">
+    <div class = "row mb-3">
+        <div class = "col-md-6">
+            <form method="get" action = "{% url 'rpa_list'%}">
+                <div class = 'input-group'>
+                    <input type = 'text' class = 'form-control' name='name' placeholder="Nome" value="{{request.get.name}}">
+                    <button type="submit" class="btn btn-primary">
+                        <i class = "bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        {% if perms.rpas.add_rpa %}
+        <div class="col-md-6">
+            <a href="{% url 'rpa_create' %}" class="btn btn-success float-end">
+                <i class="bi bi-plus"></i> Novo RPA
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <form method="get" action="{% url 'rpa_list' %}">
+                <div class='input-group'>
+                    <select class="form-select" name="rpa_status">
+                        <option value="" {% if not request.GET.rpa_status %} selected {% endif %}>Todos os Status</option>
+                        <option value="running" {% if request.GET.rpa_status == 'running' %} selected {% endif %}>Rodando</option>
+                        <option value="stopped" {% if request.GET.rpa_status == 'stopped' %} selected {% endif %}>Parado</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">
+                        <i class = "bi bi-filter"></i> Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead class= "thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Status</th>
+                    <th>Duração ON</th>
+                    <th>Erros</th>
+                    <th>Ações</th>
+                </tr>
+
+            </thead>
+            <tbody>
+                {% for rpa in rpas %}
+                <tr>
+                    <td>{{rpa.id}}</td>
+                    <td>{{rpa.name}}</td>
+                    <td>{{rpa.rpa_status}}</td>
+                    <td>{{rpa.duration}}</td>
+                    <td>{{rpa.error_count}}</td>
+                    <td>
+                        <a href="{% url 'rpa_detail' rpa.id %}" class="btn btn-info btn-sm">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        {% if perms.rpas.change_rpa %}
+                        <a href="{% url 'rpa_update' rpa.id %}" class="btn btn-warning btn-sm">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        {% endif %}
+                        {% if perms.rpas.delete_rpa %}
+                        <a href="{% url 'rpa_delete' rpa.id %}" class="btn btn-danger btn-sm">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>        
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+        
+
+    </div>
+    </div>
+    {% include 'components/_pagination.html' %}
+
+    {% endblock %}

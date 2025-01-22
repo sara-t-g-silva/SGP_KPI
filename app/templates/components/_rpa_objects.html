@@ -1,0 +1,61 @@
+<style>
+    .card-rpa-body {
+
+        text-align: center;      /* Centraliza o texto dentro do card */
+        
+    }
+    .font-weight-bold {
+        font-weight: bold; /* Define o texto como negrito */
+    }    
+    .bg-warning {
+        background-color: goldenrod !important;
+    }
+    .text-white {
+        color: white; /* Define a cor do texto como branco */
+    }
+    
+    .card-title-max-width {
+        max-width: 300px; /* Largura máxima desejada */
+    }
+    .card-title-min-height {
+        min-height: 200px; /* Altura mínima desejada */
+    }
+</style>
+
+<!--<script>
+    setTimeout(function(){
+        location.reload();
+    },30000)
+</script> reload automático da página-->
+
+
+<div class="container mt-4">
+    <div class="card-rpa-body">
+        <hr class="my-4 border-info">
+        <div class="row">
+            {% for rpa in rpa_objects %}
+            <div class="col-md-3">
+                <div class="card card-title-max-width card-title-min-height bg-secondary text-white mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title bi bi-robot">   <strong>{{ rpa.name }}</strong></h6>
+                    </div>
+                    {% if rpa.status|stringformat:"s" == 'running' %}
+                        <div class="alert alert-success" role="alert">
+                            <i class="bi bi-play-circle">   {{ rpa.status }}</i> 
+                        </div>
+                    {% elif rpa.status|stringformat:"s" == 'stopped' %}
+                    <div class="alert alert-danger" role="alert">
+                        <i class="bi bi-stop-circle">   {{ rpa.status }}</i> 
+                    </div>
+                    {% endif %}
+                    <p></p>
+                    <p class="card-text font-weight-bold display-7"><strong>Tempo total:</strong> {{ rpa.tempo_total }}</p>
+                    <p></p>
+                    <p class="card-text font-weight-bold display-7"><strong>Erros totais:</strong>  {{ rpa.total_erros }}</p>
+                    <p></p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

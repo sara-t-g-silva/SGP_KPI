@@ -1,0 +1,409 @@
+{%  extends 'base.html' %}
+
+{% block title %}
+KPI - Home
+{% endblock %}
+
+
+{% block content %}
+    <script>
+        setTimeout(function(){
+            location.reload();
+        },10000)
+    </script>
+    {% if perms.rpas.view_rpa %}
+    {% include 'components/_rpa_metrics.html' %}
+    {% endif %}
+    
+    <div class="mb-4"></div>
+    {% if perms.rpas.view_rpa %}
+    {% include 'components/_rpa_objects.html' %}
+    {% endif %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% if perms.rpas.view_rpa %}
+    <div class="row mt-4 justify-content-center">
+        <div class="col md-6 text-center">
+            <h5 class="text-center mb-3">Total de Horas (últimos 7 dias) </h5>
+            <canvas id="horasDiariasChart"></canvas>
+        </div>
+        <div class="col md-6 text-center">
+            <h5 class="text-center mb-3">Total de erros (Últimos 7 dias) </h5>
+            <canvas id="quantidadeErrosChart"></canvas>
+        </div>
+    </div>
+
+    <div class="row mt-4 justify-content-center">
+        <div class="col md-6 text-center">
+            <h5 class="mb-3">Horas Mensais (Por RPA) </h5>
+            <canvas id="horasMensaisByRpaChart"></canvas>
+        </div>
+
+        <div class="col md-6 text-center">
+            <h5 class="mb-3">Erros Mensais (Por RPA) </h5>
+            <canvas id="errosMensaisByRpaChart"></canvas>
+        </div>
+
+
+
+        
+    <script>
+     document.addEventListener('DOMContentLoaded', function() {
+            
+        
+        /*horas_diarias_data retorna do views*/
+        var horasDiariasData = JSON.parse('{{ horas_diarias_data|safe }}');
+
+        
+            var ctxHorasDiarias = document.getElementById('horasDiariasChart').getContext('2d');
+            var horasDiariasChart = new Chart(ctxHorasDiarias, {
+                type: 'line',
+                data: {
+                    labels: horasDiariasData.dates,
+                    datasets: [{
+                        label: 'Horas',
+                        data: horasDiariasData.values,
+                        fill: false,
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 3,
+                        tension: 0.3
+                        
+                    }]
+                },
+                options: {
+                    scales: {
+                        x:{
+                            title:{
+                            display: true,
+                            text: 'Data',
+                            color: '#FFFFFF'
+
+                            },
+                            ticks: {
+                                color: 'white'
+                            },
+                            grid: {
+                            color: 'rgba(255, 255, 255, 0.2)', // Cor da linha da grade
+                            borderColor: 'rgba(255, 255, 255, 0.5)', // Cor da borda da grade
+                            borderWidth: 1, // Largura da linha da grade
+                            lineWidth: 1, // Largura da linha da grade
+                            
+                            
+                        }
+
+                        },
+                       
+                       
+                        y: {
+                            beginAtZero: true,
+                            title:{
+                                display: true,
+                                text: 'Quantidade de horas',
+                                color: '#FFFFFF'
+
+                            },
+                            ticks: {
+                                color: 'white',
+                                callback: function(value) {
+                                    return value + 'h'; // Adiciona 'h' ao rótulo do eixo Y
+                                }
+                            },
+                            grid: {
+                            color: 'rgba(255, 255, 255, 0.2)', // Cor da linha da grade
+                            borderColor: 'rgba(255, 255, 255, 0.5)', // Cor da borda da grade
+                            borderWidth: 1, // Largura da linha da grade
+                            lineWidth: 1, // Largura da linha da grade
+                            
+                            
+                        }
+                        
+                        }
+                    }
+                }
+            });
+        
+            
+
+        /*Quantidade de erros diários*/
+        var QuantidadeErrosData = JSON.parse('{{ quantidade_erros|safe }}');
+
+          var ctxQuantidadeErros = document.getElementById('quantidadeErrosChart').getContext('2d');
+          var QuantidadeErrosChart = new Chart(ctxQuantidadeErros, {
+            type: 'line',
+            data: {
+              labels: QuantidadeErrosData.dates,
+              datasets: [{
+                        label: 'Erros',
+                        data: QuantidadeErrosData.values,
+                        fill: false,
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 3,
+                        tension: 0.3
+                        
+                    }]
+            },
+            options: {
+              scales: {
+                x:{
+                    title:{
+                        display: true,
+                        text: 'Data',
+                        color: '#FFFFFF'
+
+                    },
+                    ticks: {
+                        color: 'white',
+                        
+                    },
+                    grid: {
+                            color: 'rgba(255, 255, 255, 0.2)', // Cor da linha da grade
+                            borderColor: 'rgba(255, 255, 255, 0.5)', // Cor da borda da grade
+                            borderWidth: 1, // Largura da linha da grade
+                            lineWidth: 1, // Largura da linha da grade
+                            
+                            
+                        }
+                },
+                
+                
+                y: {
+                    beginAtZero: true,
+                    title:{
+                        display: true,
+                        text: 'Quantidade de horas',
+                        color: '#FFFFFF'
+
+                    },
+
+                    ticks: {
+                        color: 'white',
+                        callback: function(value) {
+                            return value 
+                        }
+                    },
+                    grid: {
+                            color: 'rgba(255, 255, 255, 0.2)', // Cor da linha da grade
+                            borderColor: 'rgba(255, 255, 255, 0.5)', // Cor da borda da grade
+                            borderWidth: 1, // Largura da linha da grade
+                            lineWidth: 1, // Largura da linha da grade
+                            
+                            
+                        },
+                  beginAtZero: true
+                }
+              }
+            }
+          }); 
+     
+        
+        /*horas mensais por rpa*/
+        var horasMensaisByRpaData = JSON.parse('{{ horas_mensais_by_rpa_data|safe }}');
+
+        var ctxHorasMensaisByRpa = document.getElementById('horasMensaisByRpaChart').getContext('2d');
+        var horasMensaisByRpaChart = new Chart(ctxHorasMensaisByRpa, {
+            type: 'bar',
+            data: {
+                labels: horasMensaisByRpaData.meses,  // Eixo X com os meses
+                datasets: Object.keys(horasMensaisByRpaData.dados).map(function(rpa, index) {
+                    return {
+                        label: rpa,  // Nome do RPA para a legenda
+                        data: horasMensaisByRpaData.dados[rpa],  // Dados de erros por mês
+                        
+                        backgroundColor: getRandomColor(), 
+                        borderWidth: 3,
+                        fill: false
+                    };
+                })
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: true
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Meses',
+                            color: '#FFFFFF'
+                            
+                        },
+                        ticks: {
+                        color: 'white',
+                        
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.2)', // Cor da linha da grade
+                            borderColor: 'rgba(255, 255, 255, 0.5)', // Cor da borda da grade
+                            borderWidth: 1, // Largura da linha da grade
+                            lineWidth: 1, // Largura da linha da grade
+                            
+                            
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Quantidade de Erros',
+                            color: '#FFFFFF'
+                            
+                        },
+                        ticks: {
+                        color: 'white',
+                        callback: function(value) {
+                            return value 
+                        }
+                        
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.2)', // Cor da linha da grade
+                            borderColor: 'rgba(255, 255, 255, 0.5)', // Cor da borda da grade
+                            borderWidth: 1, // Largura da linha da grade
+                            lineWidth: 1, // Largura da linha da grade
+                            
+                            
+                        }
+                        
+                    }
+                }
+            }
+        });
+
+        // Função para gerar cores aleatórias para as linhas
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+        
+        // quantidade de erros mensais por rpa
+        var errosMensaisByRpaData = JSON.parse('{{ erros_mensais_by_rpa_data|safe }}');
+
+        var ctxErrosMensaisByRpa = document.getElementById('errosMensaisByRpaChart').getContext('2d');
+        var errosMensaisByRpaChart = new Chart(ctxErrosMensaisByRpa, {
+            type: 'bar',
+            data: {
+                labels: errosMensaisByRpaData.meses,  // Eixo X com os meses
+                datasets: Object.keys(errosMensaisByRpaData.dados).map(function(rpa, index) {
+                    return {
+                        label: rpa,  // Nome do RPA para a legenda
+                        data: errosMensaisByRpaData.dados[rpa],  // Dados de erros por mês
+                        backgroundColor: getRandomColor(),  // Função para gerar cores aleatórias
+                        borderWidth: 3,
+                        fill: false
+                    };
+                })
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: true
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Meses',
+                            color: '#FFFFFF'
+                            
+                        },
+                        ticks: {
+                        color: 'white',
+                        
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.2)', // Cor da linha da grade
+                            borderColor: 'rgba(255, 255, 255, 0.5)', // Cor da borda da grade
+                            borderWidth: 1, // Largura da linha da grade
+                            lineWidth: 1, // Largura da linha da grade
+                            
+                            
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Quantidade de Erros',
+                            color: '#FFFFFF'
+                            
+                        },
+                        ticks: {
+                        color: 'white',
+                        callback: function(value) {
+                            return value 
+                        }
+                        
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.2)', // Cor da linha da grade
+                            borderColor: 'rgba(255, 255, 255, 0.5)', // Cor da borda da grade
+                            borderWidth: 1, // Largura da linha da grade
+                            lineWidth: 1, // Largura da linha da grade
+                            
+                            
+                        }
+                        
+                    }
+                }
+            }
+        });
+
+        // Função para gerar cores aleatórias para as linhas
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+     
+
+
+
+        /*erros totais por rpa*/ 
+        /*var errosMensaisByRpaData = JSON.parse('{{ erros_mensais_by_rpa_data|safe }}');
+
+        
+            var ctxErrosMensaisByRpa = document.getElementById('errosMensaisByRpaChart').getContext('2d');
+            var errosMensaisByRpaChart = new Chart(ctxErrosMensaisByRpa, {
+                type: 'line',
+                data: {
+                    labels: Object.keys(errosMensaisByRpaData),
+                    datasets:[{
+                        data: Object.values(errosMensaisByRpaData),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    Plugins:{
+                        legend:{
+                            display: false
+                        },
+                    }
+                }
+            }
+        );*/
+
+
+        });  
+    </script>
+    </div>
+    {% endif %}
+       
+
+   
+{% endblock %}
+  

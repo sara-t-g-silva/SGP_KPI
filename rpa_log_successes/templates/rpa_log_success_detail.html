@@ -1,0 +1,19 @@
+{%  extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4-">
+    <h2 class ="display-10">Detalhe logs RPA</h2>
+    <div class="card">
+        <div class="card-body">
+            <h3 class="card-title">{{object.rpa}}</h3>
+            <p class="card-text"> Status: {{object.rpa_log_status}}</p>
+            <p class="card-text">Duração: {{object.duration}}</p>
+            <p class="card-text">Mensagem: {{object.message}}</p>
+
+        </div>
+    </div>
+    <a href="{% url 'rpa_log_success_list' %}" class="btn btn-secondary mt-3">Voltar para lita de RPA</a>
+</div>
+
+{% endblock %}

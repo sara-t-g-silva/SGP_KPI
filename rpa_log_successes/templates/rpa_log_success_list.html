@@ -1,0 +1,90 @@
+{%  extends 'base.html' %}
+
+{% block title %}
+KPI - Rpa's
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+<div class = "row mb-3">
+    <div class = "col-md-6">
+        <form method="get" action = "{% url 'rpa_log_success_list'%}">
+
+            <div class="input-group">
+                <select class="form-select" name="rpa_id">
+                    <option value=""{% if not request.GET.rpa_id %} selected {% endif %}>Todos os Rpa's</option>
+                    {% for rpa in rpas %}
+                    <option value="{{ rpa.id }}"{% if request.GET.rpa_id == rpa.id|stringformat:'s' %} selected {% endif %}>{{ rpa.name }}</option>
+
+                    {% endfor %}
+
+                </select>          
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class = "bi bi-filter"></i> Filtrar
+                </button>
+
+            </div>
+        </form>
+    </div>
+    {% if perms.rpa_log_successes.add_rpa_log_success %}
+    <div class="col-md-6">
+        <a href="{% url 'rpa_log_success_create' %}" class="btn btn-success float-end">
+            <i class="bi bi-plus"></i> Novo log RPA
+        </a>
+
+    </div>
+    {% endif %}
+
+</div>
+
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered">
+        <thead class= "thead-dark">
+            <tr>
+                <th>RPA</th>
+                <th>duration</th>
+                <th>Status</th>
+                <th>message</th>
+                <th>Ações</th>
+            </tr>
+
+        </thead>
+        <tbody>
+            {% for logs in rpa_log_successes %}
+            <tr>
+                <td>{{logs.rpa}}</td>
+                <td>{{logs.duration}}</td>
+                <td>{{logs.rpa_log_status}}</td>
+                <td>{{logs.message}}</td>
+                
+                <td>
+                    
+                    <a href="{% url 'rpa_log_success_detail' logs.id %}" class="btn btn-info btn-sm">
+                        <i class="bi bi-eye"></i>
+                    </a>
+                    {% if perms.rpa_log_successes.change_rpa_log_success %}
+                    <a href="{% url 'rpa_log_success_update' logs.id %}" class="btn btn-warning btn-sm">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                    {% endif %}
+                    {% if perms.rpa_log_successes.delete_rpa_log_success %}
+                    <a href="{% url 'rpa_log_success_delete' logs.id %}" class="btn btn-danger btn-sm">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                    {% endif %}
+                </td>
+            </tr>        
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+    
+
+</div>
+</div>
+{% include 'components/_pagination.html' %}
+
+{% endblock %}

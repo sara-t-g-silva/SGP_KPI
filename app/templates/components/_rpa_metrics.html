@@ -1,0 +1,75 @@
+<style>
+    .card-body {
+        text-align: center; /* Centraliza o texto horizontalmente dentro do card */
+    }
+    .font-weight-bold {
+        font-weight: bold; /* Define o texto como negrito */
+    }
+    .bg-success {
+        background-color: #28a745 !important; /* Verde para "Rodando" */
+    }
+    .bg-danger {
+        background-color: #dc3545 !important; /* Vermelho para "Parado" */
+    }
+    .bg-warning {
+        background-color: goldenrod !important;
+    }
+    .text-white {
+        color: white; /* Define a cor do texto como branco */
+    }
+    .display-6 {
+        font-size: 1.5rem; /* Ajusta o tamanho do texto conforme necessário */
+    }
+</style>
+
+<!--<script>
+    setTimeout(function(){
+        location.reload();
+    },30000)
+</script> reload automático da página-->
+
+
+<div class="container mt-4">
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card bg-success">
+                        <div class="card-body">
+                            <h6 class="card-title bi bi-play-circle">  <strong>Rpa's ativos</strong></h6>
+                            <!-- retorna a quantidade de rpas rodando naquele momento com status rodando-->
+                            <p class="card-text text-write  font-weigth-bold display-6">   {{rpa_metrics.rpa_running}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-danger">
+                        <div class="card-body">
+                            <h6 class="card-title text-write bi bi-stop-circle">  RPA'S parados</h6>
+                            <!-- Disponibiliza a quantidade de rpas com status parado-->
+                            <p class="card-text text-write  font-weigth-bold display-6 ">  {{rpa_metrics.rpa_stopped}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-primary">
+                        <div class="card-body">
+                            <h6 class="card-title text-write bi bi-stopwatch">  Tempo total de execução</h6>
+                            <!-- quantas horas no total já foi feito com rpa-->
+                            <p class="card-text text-write font-weigth-bold display-6">{{rpa_metrics.tempo_total}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning">
+                        <div class="card-body">
+                            <h6 class="card-title text-write bi bi-exclamation-triangle">  Total de erros gerais</h6>
+                                <!--retorna o total de erros que ocorreram até hoje-->
+                            <p class="card-text text-write font-weigth-bold display-6">{{rpa_metrics.total_erros}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</div>
